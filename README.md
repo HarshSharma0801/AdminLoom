@@ -5,7 +5,10 @@ A system where administrators have control over user authentication,enabling the
 
 ## Video  
 
-[recording.webm](https://github.com/HarshSharma0801/AdminLoom/assets/121893196/63a2c4a6-e25e-478b-a77b-e5eba34cab1b)
+
+
+https://github.com/HarshSharma0801/AdminLoom/assets/121893196/cd09dd5e-d312-40b8-b121-04885a46b889
+
 
 
 ## Screenshots
