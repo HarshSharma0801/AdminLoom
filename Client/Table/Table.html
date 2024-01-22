@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>AdminLoom</title>
+  </head>
+  <body>
+    <nav class="bg-[#0A1D56] p-4">
+      <div class="container mx-auto flex items-center justify-between">
+        <!-- Logo -->
+        <div class="text-white text-xl md:text-2xl font-semibold">
+          <img src="../Admin-icon.png" alt="Logo" class="h-8 mr-2 inline" />
+          AdminLoom
+        </div>
+        <div class="flex md:gap-3 gap-4">
+          <a
+          href="../View/view.html"
+
+          id="ViewUser"
+          class="bg-white text-blue-500 px-4 py-2 rounded-full"
+        >
+          View
+        </a>
+        <a
+        href="../Create/Create.html"
+          id="CreateUser"
+          class="bg-white text-blue-500 px-4 py-2 rounded-full"
+        >
+          Create
+    </a>
+        </div>
+       
+      </div>
+    </nav>
+
+    <div class="container mx-auto mt-8">
+      <div class="md:p-4 py-3 px-3">
+        <h1 class="md:text-xl text-gray-600">All Users</h1>
+
+      </div>
+      <table class="min-w-full bg-white border border-gray-300">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 border-b md:text-xl text-sm">User ID</th>
+            <th class="py-2 px-4 border-b md:text-xl text-sm">Name</th>
+            <th class="py-2 px-4 border-b md:text-xl text-sm">Photo</th>
+            <th class="py-2 px-4 border-b md:text-xl text-sm">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="MainTable"></tbody>
+      </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      const getUsersEndpoint = "http://localhost:5000/GetUsers";
+
+      async function displayUsers() {
+        try {
+          const getUsersResponse = await axios
+            .get(getUsersEndpoint)
+            .then((res) => {
+              if (res.data.valid) {
+                document.getElementById("MainTable").innerHTML = "";
+
+                res.data.data.forEach((user) => {
+                  const newRow = `
+            <tr>
+            <td class="py-2 px-4 border-b text-center text-sm md:text-lg">${user.userId}</td>
+            <td class="py-2 px-4 border-b text-center text-sm md:text-lg">
+              ${user.name}
+              </td>
+            <td class="py-2 px-4 border-b text-center">
+              <div class="flex justify-center">
+                <img
+                  src="${user.image.url}"
+                  alt="User 1"
+                  class="h-5 w-5 md:w-8 md:h-[56px] md:w-[56px] rounded-full"
+                />
+              </div>
+            </td>
+            <td class="flex justify-center py-2 px-4 gap-4 border-b">
+              ${
+                user.status === "Review"
+                  ? ` <button
+                  onClick="Approve(${user.userId})"
+                class="border border-[#0500FF] text-[#0500FF] md:px-4 md:py-2 px-2 py-1 text-sm md:text-lg rounded-[8px] hover:bg-[#0500FF] hover:text-white"
+              >
+                Done
+              </button>`
+                  : ``
+              }
+             
+              <button
+              onclick="Delete(${user.userId})"
+                class="border border-[#0500FF] text-[#0500FF] md:px-4 md:py-2 px-2 py-1 text-sm md:text-lg rounded-[8px] hover:bg-[#0500FF] hover:text-white"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+          
+          `;
+
+                  document
+                    .getElementById("MainTable")
+                    .insertAdjacentHTML("beforeend", newRow);
+                });
+              }
+            });
+        } catch (error) {
+          console.error("Error fetching users:", error.message);
+        }
+      }
+
+      const Approve = async(id)=>{
+           
+           const ApproveEndpoint = "http://localhost:5000/ApproveUser";
+
+        try {
+          await axios.post(ApproveEndpoint , {id:id}).then(res=>{
+            if(res.data.valid){
+              displayUsers();
+
+            }
+          })
+
+          
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      const Delete = async(id)=>{
+           
+           const DelteEndpoint = "http://localhost:5000/DeleteUser";
+
+        try {
+          await axios.post(DelteEndpoint , {id:id}).then(res=>{
+            if(res.data.valid){
+              displayUsers();
+
+            }
+          })
+
+          
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+      displayUsers();
+    </script>
+  </body>
+</html>

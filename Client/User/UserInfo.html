@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../Cropperjs/cropper.css" />
+  <link rel="stylesheet" href="../Cropperjs/cropper.min.css" />
+
+  <title>AdminLoom</title>
+</head>
+
+<body>
+  <nav class="bg-[#0A1D56] p-4">
+    <div class="container mx-auto flex items-center justify-between">
+      <!-- Logo -->
+      <div class="text-white text-xl md:text-2xl font-semibold">
+        <img src="../Admin-icon.png" alt="Logo" class="h-8 mr-2 inline" />
+        AdminLoom
+      </div>
+    </div>
+  </nav>
+
+  <div class="flex justify-center">
+    <div id="WholeCon" class=" bg-white p-8 rounded shadow-md w-96">
+      <h2 class="text-2xl font-semibold mb-6"> Fill Data</h2>
+
+      <form id="Form">
+        <div class="mb-4">
+          <label for="userID" class="block text-gray-600 text-sm font-medium mb-2">Name</label>
+          <input type="text" id="name" name="name"
+            class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="flex justify-between">
+          <label for="image" class="block text-gray-600 text-sm font-medium mb-2">Image</label>
+          <div class="flex gap-2">
+            <button type="button" onclick="Edit()"
+              class="bg-[#0A1D56] text-white p-2 rounded hover:bg-[#0A1D56] focus:outline-none focus:ring focus:border-[#0A1D56]">Edit
+              img</button>
+            <button type="button" onclick="MakeCrop()" id="CropBtn"
+              class="hidden bg-[#0A1D56] text-white p-2 rounded hover:bg-[#0A1D56] focus:outline-none focus:ring focus:border-[#0A1D56]">Crop
+              img</button>
+
+          </div>
+        </div>
+
+        <div id="ImageContain" class="mb-6">
+          <label
+            class=" border border-gray-400 md:p-8 cursor-pointer mt-3 p-4 md:text-2xl text-gray-600 md:rounded-lg text-center flex justify-center px-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
+              stroke="currentColor" class="w-4 h-5 md:w-7 md:h-8 ">
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+            </svg>
+            Upload
+            <input id="image" type="file" name="photos" class="hidden" onchange="Make()" />
+          </label>
+        </div>
+        <div id="IMGDis" class="hidden p-5">
+          <div id="DisplayImg" class="bg-gray-200 aspect-square 	 rounded-lg overflow-hidden">
+            <!-- <img src='../user.png' id="mainImg" alt="photo" class="w-full h-full " /> -->
+
+          </div>
+
+        </div>
+
+        <button type="button" onclick="Submitted()"
+          class="w-full bg-[#0A1D56] text-white p-2 rounded hover:bg-[#0A1D56] focus:outline-none focus:ring focus:border-[#0A1D56]">Submit</button>
+      </form>
+
+
+    </div>
+
+    <div id="DataDisplay" class="flex justify-center">
+
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+    <script>
+
+
+      var ImageSrc;
+      const UrlPhotos = (files) => {
+        const reader = new FileReader();
+
+        reader.readAsDataURL(files);
+        reader.onloadend = () => {
+          const DisplayImage = `
+      <img src=${reader.result} id="mainImg" alt="photo" class="w-full h-full " />
+
+      `
+          document.getElementById('ImageContain').className = 'hidden'
+          document.getElementById('DisplayImg').innerHTML = DisplayImage;
+          ImageSrc = reader.result;
+        };
+      };
+      const Make = () => {
+        const image = document.getElementById('image').files[0]
+        document.getElementById('IMGDis').className = 'p-5'
+        UrlPhotos(image);
+      }
+      let cropper;
+
+      var croppedImgSrc = '';
+      const Edit = () => {
+        const image = document.getElementById('mainImg');
+        cropper = new Cropper(image, {
+          aspectRatio: 0,
+          viewMode: 0
+        })
+
+        document.getElementById('CropBtn').className = 'bg-[#0A1D56] text-white p-2 rounded hover:bg-[#0A1D56] focus:outline-none focus:ring focus:border-[#0A1D56]'
+
+
+      }
+
+      const MakeCrop = () => {
+
+        document.getElementById('DisplayImg').innerHTML = '';
+
+        croppedImgSrc = cropper.getCroppedCanvas().toDataURL("image/png");
+        const DisplayImage = `
+      <img src=${croppedImgSrc} id="MainImg" alt="photo" class="w-full h-full " />
+
+      `
+        document.getElementById('DisplayImg').innerHTML = DisplayImage;
+        ImageSrc = croppedImgSrc;
+
+      }
+      const Submitted = async () => {
+        const Id = sessionStorage.getItem('userid');
+        const name = document.getElementById('name').value;
+        const image = ImageSrc;
+        const UpdateUserEndpoint = "http://localhost:5000/UpdateUser";
+        try {
+          await axios.post(UpdateUserEndpoint, {
+            name: name,
+            image: image,
+            id: Id
+          }).then(res => {
+            if (res.data.valid) {
+              getuser();
+            }
+          })
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+
+      const getuser = async () => {
+        const Id = sessionStorage.getItem('userid');
+        const getUserEndpoint = "http://localhost:5000/getUser";
+        try {
+          await axios.get(getUserEndpoint, {
+            params: {
+              id: Id
+            }
+          }).then(res => {
+            if (res.data.valid) {
+              if (res.data.data.status === 'Review' || res.data.data.status === 'Accepted') {
+                document.getElementById('WholeCon').className = 'hidden'
+
+              }
+              const element = `
+              <div class=" bg-white p-8 rounded shadow-md w-96">
+                <h2 class="text-2xl font-semibold mb-6">View Details</h2>
+            
+                <form id="Form">
+                  <div class="mb-4">
+                    <label for="userID" class="block text-gray-600 text-sm font-medium mb-2">Name</label>
+                    <input readonly type="text" id="name" value=${res.data.data.name} name="name" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-blue-500">
+                  </div>
+             
+                  <div class="flex justify-between">
+                    <label for="image" class="block text-gray-600 text-sm font-medium mb-2">Image</label>
+                   
+                  </div>
+    
+                  <div id="ImageContain" class="mb-6">
+               
+                  </div>
+                  <div id="IMGDis" class="p-5">
+                    <div id="DisplayImg" class="bg-gray-200 aspect-video 	 rounded-lg overflow-hidden">
+                    <img
+                  src="${res.data.data.image.url}"
+                  alt="User 1"
+                  class="w-full h-full"
+                />
+                      </div>
+                
+                  </div>
+
+                   ${res.data.data.status !== 'Accepted' ? `<h1 class='text-xl text-center text-red-500'>Not Accepted By Admin </h1> `: `<h1 class='text-xl text-center text-green-500'>Accepted By Admin </h1>`}                  
+                </form>
+              `
+              console.log(res.data.data.image.url);
+              if(res.data.data.status === 'Review' || res.data.data.status === 'Accepted'){
+                document.getElementById('DataDisplay').innerHTML = element;
+
+              }
+
+            }
+          })
+
+        } catch (error) {
+          console.log(error)
+        }
+
+      }
+      getuser();
+    </script>
+    <script src="../Cropperjs/cropper.js"></script>
+    <script src="../Cropperjs/cropper.min.js"></script>
+
+
+</body>
+
+</html>

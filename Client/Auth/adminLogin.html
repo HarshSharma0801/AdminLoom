@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>AdminLoom</title>
+  </head>
+  <body>
+    <div class="flex md:flex-row flex-col">
+        <div class=" md:flex-[0.6] flex-[0.3] h-screen bg-[#0A1D56]">
+            <div class="flex flex-col gap-10 justify-center">
+           
+              <div class="flex gap-3 justify-center text-white text-[45px] md:text-[60px] md:pt-[200px] py-10"> 
+                <img src="../Admin-icon.png" class="md:w-[100px] w-[70px]" />
+               <div>AdminLoom</div> 
+              </div>
+              </div>
+            </div>
+            <div class="md:py-[100px] md:flex-[0.4] flex-[0.7] h-screen ">
+                <div class="bg-white p-8 rounded shadow-md ">
+                    <h2 class="text-2xl font-semibold mb-6 text-[#646464] text-center">Admin Login</h2>
+                
+                    <form>
+                      <div class="mb-4">
+                        <label for="username" class="block text-gray-600 text-sm font-medium mb-2">Admin ID</label>
+                        <input type="text" id="admin" name="adminID" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-blue-500">
+                      </div>
+                
+                      <div class="mb-6">
+                        <label for="password" class="block text-gray-600 text-sm font-medium mb-2">Password</label>
+                        <input type="text" id="AdminPassword" name="password" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-blue-500">
+                      </div>
+                
+                      <button type="button" onclick="Submit()" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">Login</button>
+                    </form>
+
+                  </div>
+              </div>
+
+          </div>
+          
+    </div>
+    <script>
+
+      const Submit = ()=>{
+        const adminId = document.getElementById("admin").value
+      const adminPassword = document.getElementById("AdminPassword").value
+
+      if(adminId==='admin' && adminPassword === 'admin'){
+        window.location.href = '../Table/Table.html'
+
+      }
+
+      }
+      
+
+
+
+    </script>
+  </body>
+</html>
